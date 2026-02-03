@@ -2,7 +2,7 @@
 
 **Project:** AuditClaw — A Walled OpenClaw Fork for Internal Auditors  
 **Version:** 0.1 (Draft)  
-**Last Updated:** 2025-02-01
+**Last Updated:** 2026-02-03
 
 ---
 
@@ -552,23 +552,54 @@ File: `config.json`
 
 **Goal:** Working containerized fork with audit-focused configuration
 
-- [ ] Fork OpenClaw repository at stable release tag
-- [ ] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, etc.)
-- [ ] Remove voice/mobile components
-- [ ] Remove multi-agent routing (single agent only)
-- [ ] Rename to AuditClaw (CLI, paths, branding)
+Phase 1 is divided into three sub-phases to enable incremental progress and testing.
+
+#### Phase 1.a: Containerization
+
+**Goal:** Get existing OpenClaw running in a hardened Docker container. This establishes a working baseline to test against as we remove components.
+
 - [ ] Create Dockerfile with security hardening
 - [ ] Create docker-compose.yml with proper isolation
 - [ ] Configure volume mounts (input read-only, output read-write)
-- [ ] Create audit-focused default configuration
-- [ ] Create audit-specific system prompt
-- [ ] Simplify web UI for document-focused workflow
+- [ ] Verify web UI functions correctly in container
 - [ ] Test skill loading from mounted volume
-- [ ] Create basic documentation
-- [ ] Release v0.1.0
+- [ ] Document container setup and usage
 
 **Deliverables:**
 - `Dockerfile` and `docker-compose.yml`
+- Working container running OpenClaw
+- Basic setup documentation
+
+#### Phase 1.b: Component Removal
+
+**Goal:** Strip out components not needed for audit workflows. Remove incrementally and verify web UI still works after each removal.
+
+- [ ] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, etc.)
+- [ ] Remove voice/wake word components
+- [ ] Remove mobile companion app code
+- [ ] Remove multi-agent routing (single agent only)
+- [ ] Remove or disable Canvas/A2UI (evaluate usefulness first)
+- [ ] Clean up orphaned dependencies and configuration
+
+**Deliverables:**
+- Stripped-down codebase with only web UI interaction
+- Reduced dependency footprint
+- Verified working web interface
+
+#### Phase 1.c: Rebranding and Configuration
+
+**Goal:** Rename to AuditClaw and configure for audit-focused workflows.
+
+- [ ] Rename CLI and paths (`auditclaw` instead of `openclaw`)
+- [ ] Update branding (name, descriptions, prompts)
+- [ ] Create audit-focused default configuration
+- [ ] Create audit-specific system prompt
+- [ ] Simplify web UI for document-focused workflow
+- [ ] Create basic user documentation
+- [ ] Release v0.1.0
+
+**Deliverables:**
+- `auditclaw` CLI and renamed paths
 - Working container image (`auditclaw:0.1.0`)
 - Web interface accessible at `localhost:18789`
 - Skill loading from `~/auditclaw-skills/`
@@ -630,16 +661,19 @@ File: `config.json`
 
 ## Technical Decisions
 
-### Decision 1: What to Fork
+### Decision 1: Fork Source
 
-**Decision:** Fork OpenClaw at a stable release tag, not main branch.
+**Decision:** Forked from OpenClaw main branch on 2026-02-03.
 
-**Rationale:** 
-- OpenClaw is actively developed with frequent changes
-- Forking a stable release reduces merge conflicts
-- Can selectively pull improvements later
+**Details:**
+- Fork created from `openclaw/openclaw` main branch
+- Base commit: `f52ca0a71` (2026-02-03)
+- OpenClaw version at fork: v2026.2.2
 
-**Action:** Identify most recent stable release and fork from that tag.
+**Rationale:**
+- Main branch provided the most current feature set
+- Stable enough for our starting point
+- Can selectively pull improvements from upstream as needed
 
 ### Decision 2: Model Support
 
