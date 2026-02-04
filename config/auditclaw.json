@@ -9,5 +9,10 @@
     "slots": {
       "memory": "none"
     }
+  },
+  "skills": {
+    "load": {
+      "extraDirs": ["/workspace/skills"]
+    }
   }
 }
