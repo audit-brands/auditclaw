@@ -6,7 +6,7 @@
 #   docker compose -f docker-compose.auditclaw.yml up -d
 #   docker compose -f docker-compose.auditclaw.yml logs -f
 #
-# See docs/container-setup.md for full documentation
+# See docs/auditclaw/container-setup.md for full documentation
 
 services:
   auditclaw:
@@ -29,12 +29,15 @@ services:
     ports:
       - "127.0.0.1:18789:18789"
 
-    # Isolated network
+    # Isolated network with internet access
     networks:
       - auditclaw-net
 
     # Volume mounts with principle of least privilege
     volumes:
+      # Config: AuditClaw configuration (disables device auth for containerized use)
+      - ./config/auditclaw.json:/home/auditclaw/.auditclaw/openclaw.json:ro
+
       # Input: Documents to analyze (read-only)
       - ${AUDIT_INPUT:-~/audit-input}:/workspace/input:ro
 
@@ -44,8 +47,8 @@ services:
       # Skills: Community skills directory (read-only)
       - ${SKILLS_DIR:-~/auditclaw-skills}:/workspace/skills:ro
 
-      # Config: Persistent configuration (named volume, read-write)
-      - auditclaw-config:/home/auditclaw/.auditclaw:rw
+      # Config data: Persistent state like sessions, paired devices (named volume)
+      - auditclaw-data:/home/auditclaw/.auditclaw/data:rw
 
       # Temp: Required for read_only mode (named volume, read-write)
       - auditclaw-tmp:/tmp:rw
@@ -85,12 +88,16 @@ services:
 
 # Named volumes for persistent data
 volumes:
-  auditclaw-config:
-    name: auditclaw-config
+  auditclaw-data:
+    name: auditclaw-data
   auditclaw-tmp:
     name: auditclaw-tmp
 
 # Isolated network
+# Note: This provides network namespace isolation but does NOT block
+# outbound connections to local network by default. For production use
+# with sensitive environments, consider adding host firewall rules to
+# restrict container egress to internet-only.
 networks:
   auditclaw-net:
     name: auditclaw-net

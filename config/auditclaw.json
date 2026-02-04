@@ -1,0 +1,13 @@
+{
+  "gateway": {
+    "controlUi": {
+      "dangerouslyDisableDeviceAuth": true
+    }
+  },
+  "plugins": {
+    "enabled": false,
+    "slots": {
+      "memory": "none"
+    }
+  }
+}
