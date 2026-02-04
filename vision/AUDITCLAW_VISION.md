@@ -558,17 +558,17 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 
 **Goal:** Get existing OpenClaw running in a hardened Docker container. This establishes a working baseline to test against as we remove components.
 
-- [ ] Create Dockerfile with security hardening
-- [ ] Create docker-compose.yml with proper isolation
-- [ ] Configure volume mounts (input read-only, output read-write)
-- [ ] Verify web UI functions correctly in container
+- [x] Create Dockerfile with security hardening (`Dockerfile.auditclaw`)
+- [x] Create docker-compose.yml with proper isolation (`docker-compose.auditclaw.yml`)
+- [x] Configure volume mounts (input read-only, output read-write)
+- [x] Verify web UI functions correctly in container (2026-02-04)
 - [ ] Test skill loading from mounted volume
-- [ ] Document container setup and usage
+- [x] Document container setup and usage (`docs/auditclaw/container-setup.md`)
 
 **Deliverables:**
-- `Dockerfile` and `docker-compose.yml`
+- `Dockerfile.auditclaw` and `docker-compose.auditclaw.yml`
 - Working container running OpenClaw
-- Basic setup documentation
+- Basic setup documentation (`docs/auditclaw/container-setup.md`)
 
 #### Phase 1.b: Component Removal
 

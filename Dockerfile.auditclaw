@@ -1,0 +1,90 @@
+# AuditClaw - Security-hardened Docker image for internal audit workflows
+# Based on OpenClaw, configured for containerized document analysis
+
+FROM node:22-bookworm-slim AS builder
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bun (required for build scripts)
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
+
+RUN corepack enable
+
+WORKDIR /app
+
+# Copy package files first for better layer caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY ui/package.json ./ui/package.json
+COPY patches ./patches
+COPY scripts ./scripts
+
+RUN pnpm install --frozen-lockfile
+
+# Copy source and build
+COPY . .
+RUN OPENCLAW_A2UI_SKIP_MISSING=1 pnpm build
+
+# Force pnpm for UI build (Bun may fail on ARM architectures)
+ENV OPENCLAW_PREFER_PNPM=1
+RUN pnpm ui:build
+
+# ============================================================================
+# Production image - minimal and security-hardened
+# ============================================================================
+FROM node:22-bookworm-slim
+
+# Install only runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Rename the existing node user/group to auditclaw
+# The base image already has node:node with UID/GID 1000
+# Keeping UID 1000 ensures proper volume permissions with host user
+RUN groupmod -n auditclaw node && \
+    usermod -l auditclaw -d /home/auditclaw -m node
+
+# Create directory structure
+RUN mkdir -p /home/auditclaw/.auditclaw \
+    /workspace/input \
+    /workspace/output \
+    /workspace/skills \
+    && chown -R auditclaw:auditclaw /home/auditclaw /workspace
+
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder --chown=auditclaw:auditclaw /app/dist ./dist
+COPY --from=builder --chown=auditclaw:auditclaw /app/node_modules ./node_modules
+COPY --from=builder --chown=auditclaw:auditclaw /app/package.json ./package.json
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV HOME=/home/auditclaw
+ENV OPENCLAW_STATE_DIR=/home/auditclaw/.auditclaw
+
+# Health check - verify gateway is responding
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:18789/ || exit 1
+
+# Run as non-root user
+USER auditclaw
+
+# Expose the gateway port
+EXPOSE 18789
+
+# Start gateway server
+# --allow-unconfigured: Start without requiring full configuration
+# --bind lan: Bind to all interfaces (container networking requires this)
+# Note: Port is only exposed to localhost via docker-compose
+CMD ["node", "dist/index.js", "gateway", "--allow-unconfigured", "--bind", "lan"]

@@ -1,0 +1,97 @@
+# AuditClaw - Docker Compose configuration for internal audit workflows
+# Security-hardened container with isolated volume mounts
+#
+# Usage:
+#   docker compose -f docker-compose.auditclaw.yml build
+#   docker compose -f docker-compose.auditclaw.yml up -d
+#   docker compose -f docker-compose.auditclaw.yml logs -f
+#
+# See docs/container-setup.md for full documentation
+
+services:
+  auditclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile.auditclaw
+    image: auditclaw:local
+    container_name: auditclaw
+
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true    # Prevent privilege escalation
+    cap_drop:
+      - ALL                        # Drop all Linux capabilities
+    read_only: true                # Read-only root filesystem
+    user: "1000:1000"              # Run as non-root user
+
+    # Network: localhost only for security
+    # Gateway is only accessible from the host machine
+    ports:
+      - "127.0.0.1:18789:18789"
+
+    # Isolated network
+    networks:
+      - auditclaw-net
+
+    # Volume mounts with principle of least privilege
+    volumes:
+      # Input: Documents to analyze (read-only)
+      - ${AUDIT_INPUT:-~/audit-input}:/workspace/input:ro
+
+      # Output: Generated reports and findings (read-write)
+      - ${AUDIT_OUTPUT:-~/audit-output}:/workspace/output:rw
+
+      # Skills: Community skills directory (read-only)
+      - ${SKILLS_DIR:-~/auditclaw-skills}:/workspace/skills:ro
+
+      # Config: Persistent configuration (named volume, read-write)
+      - auditclaw-config:/home/auditclaw/.auditclaw:rw
+
+      # Temp: Required for read_only mode (named volume, read-write)
+      - auditclaw-tmp:/tmp:rw
+
+    # Environment variables
+    environment:
+      # AI provider API keys (at least one required)
+      # OpenRouter recommended for testing - provides many models at good prices
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+
+      # Gateway authentication token (required by OpenClaw gateway)
+      # Default 'local' is fine since container only binds to 127.0.0.1
+      # Override with OPENCLAW_GATEWAY_TOKEN in .env for LAN access
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-local}
+
+      # Standard environment
+      - HOME=/home/auditclaw
+      - TERM=xterm-256color
+      - NODE_ENV=production
+      - OPENCLAW_STATE_DIR=/home/auditclaw/.auditclaw
+
+    # Process management
+    init: true                     # Use tini for proper signal handling
+    restart: unless-stopped        # Auto-restart on failure
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+# Named volumes for persistent data
+volumes:
+  auditclaw-config:
+    name: auditclaw-config
+  auditclaw-tmp:
+    name: auditclaw-tmp
+
+# Isolated network
+networks:
+  auditclaw-net:
+    name: auditclaw-net
+    driver: bridge
