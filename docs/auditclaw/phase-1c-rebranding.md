@@ -14,11 +14,27 @@ This document details the plan for rebranding OpenClaw to AuditClaw and creating
 
 ### Completed
 
-(None yet)
+- ✅ Step 1: CLI and Path Renaming (partial)
+  - Renamed package from "openclaw" to "auditclaw"
+  - Renamed CLI entry point (openclaw.mjs → auditclaw.mjs)
+  - Updated config paths (.auditclaw, auditclaw.json)
+  - Updated daemon/service names (launchd, systemd, Windows)
+  - Updated CLI banner with AuditClaw branding
+  - Updated version.ts for AUDITCLAW_VERSION
+  - Added legacy fallbacks for migration
+  - Cleaned up package.json scripts
+
+- ✅ Step 2: Branding Updates (partial)
+  - Updated HTML title to "AuditClaw"
+  - Updated localStorage key prefix
+  - Updated default assistant identity (name: "AuditClaw", avatar: "📋")
+  - Updated default tagline
 
 ### In Progress
 
-- Step 1: Planning and documentation
+- Step 1.3: Environment variable bulk replacement (230+ files)
+- Step 3: Audit-focused default configuration
+- Step 4: Audit-specific system prompt
 
 ---
 
