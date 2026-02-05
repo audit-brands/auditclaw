@@ -1,8 +1,8 @@
 # AuditClaw Development Roadmap
 
-Last updated: 2026-02-04
+Last updated: 2026-02-05
 
-## Current Status: Phase 1.a - Containerization ✅ COMPLETE
+## Current Status: Phase 1.c - Rebranding and Configuration (Up Next)
 
 ### Completed Tasks
 
@@ -34,14 +34,24 @@ Last updated: 2026-02-04
 
 ---
 
-## Phase 1.b: Component Removal (Future)
+## Phase 1.b: Component Removal ✅ COMPLETE
 
-- [ ] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, etc.)
-- [ ] Remove voice/wake word components
-- [ ] Remove mobile companion app code
-- [ ] Remove multi-agent routing (single agent only)
-- [ ] Remove or disable Canvas/A2UI (evaluate usefulness first)
-- [ ] Clean up orphaned dependencies and configuration
+- [x] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, LINE, etc.)
+- [x] Remove voice/wake word components (TTS stubbed)
+- [x] Remove mobile companion app code (iOS, Android, macOS apps)
+- [x] Remove extension channels (19 extensions)
+- [x] Clean up orphaned dependencies (9 messaging packages removed)
+- [x] Remove channel documentation (44 files)
+- [x] **Retained:** Multi-agent routing for future Audit Personas feature
+
+**Note:** Multi-agent routing was intentionally kept to support segregation of duties:
+
+- Primary Auditor persona
+- QA & Standards Reviewer persona
+- Domain Specialists (Financial, IT, Compliance)
+- Engagement Manager persona
+
+See `docs/auditclaw/phase-1b-component-removal.md` for details.
 
 ---
 
@@ -64,6 +74,7 @@ Last updated: 2026-02-04
 ### Current State
 
 The container can currently make outbound connections to:
+
 - ✅ Internet (required for AI APIs and web research)
 - ⚠️ Local network (unintended - NAS, other computers, local services)
 
@@ -82,11 +93,13 @@ iptables -I DOCKER-USER -s 172.18.0.0/16 -d 169.254.0.0/16 -j DROP
 ```
 
 Pros:
+
 - Simple to implement
 - No container changes needed
 - Can be scripted in setup
 
 Cons:
+
 - Requires root access on host
 - Must persist across reboots
 
@@ -105,10 +118,12 @@ services:
 ```
 
 Pros:
+
 - No host configuration needed
 - More portable
 
 Cons:
+
 - Additional complexity
 - Performance overhead
 - SSL/TLS interception challenges
@@ -118,10 +133,12 @@ Cons:
 Use a network plugin like Calico or Weave with network policies.
 
 Pros:
+
 - Native Kubernetes-style policies
 - Fine-grained control
 
 Cons:
+
 - Significant complexity
 - Overkill for single-container deployment
 
