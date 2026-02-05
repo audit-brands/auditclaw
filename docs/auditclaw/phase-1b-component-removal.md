@@ -38,9 +38,20 @@ This document details the plan for removing unnecessary components from OpenClaw
     - Skills can be associated with specific personas
   - See: Phase 2+ roadmap for Audit Personas feature
 
+- ✅ Step 6: Clean Up Dependencies - COMPLETE
+  - Removed messaging dependencies from package.json:
+    - `@grammyjs/runner`, `@grammyjs/transformer-throttler` (Telegram)
+    - `grammy`, `@grammyjs/types` (Telegram)
+    - `@slack/bolt`, `@slack/web-api` (Slack)
+    - `@whiskeysockets/baileys` (WhatsApp)
+    - `@line/bot-sdk` (LINE)
+    - `discord-api-types` (Discord)
+    - `node-edge-tts` (TTS)
+  - Updated pnpm-lock.yaml
+  - Gateway builds and runs successfully
+
 ### Next Steps
 
-- Step 6: Clean Up Dependencies
 - Step 7: Remove Documentation
 
 ---
