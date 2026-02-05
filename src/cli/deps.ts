@@ -1,28 +1,31 @@
 import type { OutboundSendDeps } from "../infra/outbound/deliver.js";
-import { logWebSelfId, sendMessageWhatsApp } from "../channels/web/index.js";
-import { sendMessageDiscord } from "../discord/send.js";
-import { sendMessageIMessage } from "../imessage/send.js";
-import { sendMessageSignal } from "../signal/send.js";
-import { sendMessageSlack } from "../slack/send.js";
-import { sendMessageTelegram } from "../telegram/send.js";
+
+// AuditClaw: Messaging channels removed. These are stub implementations.
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SendMessageFn = (...args: any[]) => Promise<void>;
+
+const stubSendMessage: SendMessageFn = async () => {
+  throw new Error("Messaging channels are not available in AuditClaw");
+};
 
 export type CliDeps = {
-  sendMessageWhatsApp: typeof sendMessageWhatsApp;
-  sendMessageTelegram: typeof sendMessageTelegram;
-  sendMessageDiscord: typeof sendMessageDiscord;
-  sendMessageSlack: typeof sendMessageSlack;
-  sendMessageSignal: typeof sendMessageSignal;
-  sendMessageIMessage: typeof sendMessageIMessage;
+  sendMessageWhatsApp: SendMessageFn;
+  sendMessageTelegram: SendMessageFn;
+  sendMessageDiscord: SendMessageFn;
+  sendMessageSlack: SendMessageFn;
+  sendMessageSignal: SendMessageFn;
+  sendMessageIMessage: SendMessageFn;
 };
 
 export function createDefaultDeps(): CliDeps {
   return {
-    sendMessageWhatsApp,
-    sendMessageTelegram,
-    sendMessageDiscord,
-    sendMessageSlack,
-    sendMessageSignal,
-    sendMessageIMessage,
+    sendMessageWhatsApp: stubSendMessage,
+    sendMessageTelegram: stubSendMessage,
+    sendMessageDiscord: stubSendMessage,
+    sendMessageSlack: stubSendMessage,
+    sendMessageSignal: stubSendMessage,
+    sendMessageIMessage: stubSendMessage,
   };
 }
 
@@ -38,4 +41,6 @@ export function createOutboundSendDeps(deps: CliDeps): OutboundSendDeps {
   };
 }
 
-export { logWebSelfId };
+export const logWebSelfId = async () => {
+  // Stub - WhatsApp web login not available
+};

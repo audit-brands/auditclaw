@@ -1,5 +1,10 @@
-export { monitorSignalProvider } from "./monitor.js";
-export { probeSignal } from "./probe.js";
-export { sendMessageSignal } from "./send.js";
-export { sendReactionSignal, removeReactionSignal } from "./send-reactions.js";
-export { resolveSignalReactionLevel } from "./reaction-level.js";
+// AuditClaw: Messaging channels removed. Stub implementation.
+
+export async function createSignalMonitor(): Promise<null> {
+  return null;
+}
+
+export * from "./accounts.js";
+export * from "./format.js";
+export * from "./reaction-level.js";
+export * from "./send.js";

@@ -1,6 +1,6 @@
 # Phase 1.b: Component Removal Plan
 
-Last updated: 2026-02-04
+Last updated: 2026-02-05
 
 ## Overview
 
@@ -10,17 +10,42 @@ This document details the plan for removing unnecessary components from OpenClaw
 
 ---
 
+## Current Status: IN PROGRESS
+
+### Completed
+
+- ✅ Step 1: Removed extension channels (19 extensions, 418 files)
+- ✅ Step 2: Removed mobile apps (545 files)
+- 🔄 Step 3: Core messaging channels removal - IN PROGRESS
+  - Removed original src/telegram, src/discord, src/slack, src/signal, src/imessage, src/whatsapp, src/web, src/line directories
+  - Created stub implementations for 60+ modules
+  - Docker build compiles successfully
+  - **Issue**: Runtime errors due to missing exports in plugins/runtime/index.ts
+  - Need to complete stubbing of all imports in plugins/runtime/index.ts
+
+### Remaining Work for Step 3
+
+The `src/plugins/runtime/index.ts` file imports many functions/objects from messaging channels that need stub exports:
+
+- Discord: `listDiscordDirectoryGroupsLive`, `listDiscordDirectoryPeersLive`, `monitorDiscordProvider`, `probeDiscord`, `resolveDiscordChannelAllowlist`, `resolveDiscordUserAllowlist`, `sendMessageDiscord`, `sendPollDiscord`
+- LINE: `monitorLineProvider`, `probeLineBot`, `createQuickReplyItems`, `pushMessageLine`, `pushMessagesLine`, `pushFlexMessage`, `pushTemplateMessage`, `pushLocationMessage`, `pushTextMessageWithQuickReplies`, `sendMessageLine`, `buildTemplateMessageFromPayload`
+- And many more from each channel...
+
+**Approach**: Continue adding stub exports until gateway starts cleanly.
+
+---
+
 ## Scope Summary
 
-| Category | Files | LOC | Risk Level |
-|----------|-------|-----|------------|
-| Extension Channels | 374 | 66.8K | Low |
-| Mobile Apps | 443+ | 64K | Low |
-| Core Messaging Channels | 256 | 47.8K | Medium |
-| Voice/TTS | ~40 | 9K | Low |
-| Canvas/A2UI | 4+ | 1K | Low |
-| Integration Points | ~50 | varies | High |
-| **Total** | **1,200+** | **140K+** | |
+| Category                | Files      | LOC       | Risk Level |
+| ----------------------- | ---------- | --------- | ---------- |
+| Extension Channels      | 374        | 66.8K     | Low        |
+| Mobile Apps             | 443+       | 64K       | Low        |
+| Core Messaging Channels | 256        | 47.8K     | Medium     |
+| Voice/TTS               | ~40        | 9K        | Low        |
+| Canvas/A2UI             | 4+         | 1K        | Low        |
+| Integration Points      | ~50        | varies    | High       |
+| **Total**               | **1,200+** | **140K+** |            |
 
 ---
 
@@ -288,15 +313,15 @@ After Phase 1.b completion:
 
 ## Estimated Effort
 
-| Step | Effort | Risk |
-|------|--------|------|
-| Step 1: Extensions | Low | Low |
-| Step 2: Mobile Apps | Low | Low |
-| Step 3: Core Channels | High | Medium |
-| Step 4: Voice/TTS | Low | Low |
-| Step 5: Multi-Agent | Medium | Medium |
-| Step 6: Dependencies | Low | Low |
-| Step 7: Documentation | Low | None |
+| Step                  | Effort | Risk   |
+| --------------------- | ------ | ------ |
+| Step 1: Extensions    | Low    | Low    |
+| Step 2: Mobile Apps   | Low    | Low    |
+| Step 3: Core Channels | High   | Medium |
+| Step 4: Voice/TTS     | Low    | Low    |
+| Step 5: Multi-Agent   | Medium | Medium |
+| Step 6: Dependencies  | Low    | Low    |
+| Step 7: Documentation | Low    | None   |
 
 **Total estimated: 4-8 hours of focused work**
 

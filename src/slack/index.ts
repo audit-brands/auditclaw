@@ -1,25 +1,10 @@
-export {
-  listEnabledSlackAccounts,
-  listSlackAccountIds,
-  resolveDefaultSlackAccountId,
-  resolveSlackAccount,
-} from "./accounts.js";
-export {
-  deleteSlackMessage,
-  editSlackMessage,
-  getSlackMemberInfo,
-  listSlackEmojis,
-  listSlackPins,
-  listSlackReactions,
-  pinSlackMessage,
-  reactSlackMessage,
-  readSlackMessages,
-  removeOwnSlackReactions,
-  removeSlackReaction,
-  sendSlackMessage,
-  unpinSlackMessage,
-} from "./actions.js";
-export { monitorSlackProvider } from "./monitor.js";
-export { probeSlack } from "./probe.js";
-export { sendMessageSlack } from "./send.js";
-export { resolveSlackAppToken, resolveSlackBotToken } from "./token.js";
+// AuditClaw: Messaging channels removed. Stub implementation.
+
+export async function createSlackMonitor(): Promise<null> {
+  return null;
+}
+
+export * from "./accounts.js";
+export * from "./scopes.js";
+export * from "./targets.js";
+export * from "./threading-tool-context.js";

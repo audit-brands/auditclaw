@@ -1,2 +1,5 @@
-export { monitorIMessageProvider } from "./monitor/monitor-provider.js";
-export type { MonitorIMessageOpts } from "./monitor/types.js";
+// AuditClaw: Messaging channels removed. Stub implementation.
+
+export async function createIMessageMonitor(): Promise<null> {
+  return null;
+}

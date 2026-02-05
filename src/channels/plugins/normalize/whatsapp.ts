@@ -1,23 +1,9 @@
-import { normalizeWhatsAppTarget } from "../../../whatsapp/normalize.js";
+// AuditClaw: Messaging channels removed. Stub implementation.
 
-export function normalizeWhatsAppMessagingTarget(raw: string): string | undefined {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return undefined;
-  }
-  return normalizeWhatsAppTarget(trimmed) ?? undefined;
+export function looksLikeWhatsAppTargetId(_target: string): boolean {
+  return false;
 }
 
-export function looksLikeWhatsAppTargetId(raw: string): boolean {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return false;
-  }
-  if (/^whatsapp:/i.test(trimmed)) {
-    return true;
-  }
-  if (trimmed.includes("@")) {
-    return true;
-  }
-  return /^\+?\d{3,}$/.test(trimmed);
+export function normalizeWhatsAppMessagingTarget(_target: string): string | null {
+  return null;
 }
