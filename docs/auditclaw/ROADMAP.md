@@ -30,7 +30,7 @@ Last updated: 2026-02-04
 
 ### Pending
 
-- [ ] Test skill loading from mounted volume (requires skills to be present)
+- [x] Test skill loading from mounted volume (configured and verified)
 
 ---
 
