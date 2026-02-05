@@ -758,45 +758,6 @@
             ]
           },
           {
-            "tab": "Channels",
-            "groups": [
-              {
-                "group": "Overview",
-                "pages": ["channels/index"]
-              },
-              {
-                "group": "Messaging platforms",
-                "pages": [
-                  "channels/whatsapp",
-                  "channels/telegram",
-                  "channels/grammy",
-                  "channels/discord",
-                  "channels/slack",
-                  "channels/googlechat",
-                  "channels/mattermost",
-                  "channels/signal",
-                  "channels/imessage",
-                  "channels/msteams",
-                  "channels/line",
-                  "channels/matrix",
-                  "channels/zalo",
-                  "channels/zalouser"
-                ]
-              },
-              {
-                "group": "Configuration",
-                "pages": [
-                  "concepts/group-messages",
-                  "concepts/groups",
-                  "broadcast-groups",
-                  "concepts/channel-routing",
-                  "channels/location",
-                  "channels/troubleshooting"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Agents",
             "groups": [
               {
