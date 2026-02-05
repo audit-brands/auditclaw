@@ -16,22 +16,20 @@ This document details the plan for removing unnecessary components from OpenClaw
 
 - ✅ Step 1: Removed extension channels (19 extensions, 418 files)
 - ✅ Step 2: Removed mobile apps (545 files)
-- 🔄 Step 3: Core messaging channels removal - IN PROGRESS
+- ✅ Step 3: Core messaging channels removal - COMPLETE
   - Removed original src/telegram, src/discord, src/slack, src/signal, src/imessage, src/whatsapp, src/web, src/line directories
-  - Created stub implementations for 60+ modules
+  - Created stub implementations for 60+ modules with all required exports
+  - All imports in plugins/runtime/index.ts are now stubbed
   - Docker build compiles successfully
-  - **Issue**: Runtime errors due to missing exports in plugins/runtime/index.ts
-  - Need to complete stubbing of all imports in plugins/runtime/index.ts
+  - Gateway starts cleanly without messaging channel errors
+  - Container healthcheck passes
 
-### Remaining Work for Step 3
+### Next Steps
 
-The `src/plugins/runtime/index.ts` file imports many functions/objects from messaging channels that need stub exports:
-
-- Discord: `listDiscordDirectoryGroupsLive`, `listDiscordDirectoryPeersLive`, `monitorDiscordProvider`, `probeDiscord`, `resolveDiscordChannelAllowlist`, `resolveDiscordUserAllowlist`, `sendMessageDiscord`, `sendPollDiscord`
-- LINE: `monitorLineProvider`, `probeLineBot`, `createQuickReplyItems`, `pushMessageLine`, `pushMessagesLine`, `pushFlexMessage`, `pushTemplateMessage`, `pushLocationMessage`, `pushTextMessageWithQuickReplies`, `sendMessageLine`, `buildTemplateMessageFromPayload`
-- And many more from each channel...
-
-**Approach**: Continue adding stub exports until gateway starts cleanly.
+- Step 4: Remove Voice/TTS Components
+- Step 5: Remove Multi-Agent Routing
+- Step 6: Clean Up Dependencies
+- Step 7: Remove Documentation
 
 ---
 

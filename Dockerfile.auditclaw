@@ -45,6 +45,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    procps \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -55,7 +56,14 @@ RUN groupmod -n auditclaw node && \
     usermod -l auditclaw -d /home/auditclaw -m node
 
 # Create directory structure
+# Note: .openclaw is used by Canvas/A2UI, .auditclaw is for our config
 RUN mkdir -p /home/auditclaw/.auditclaw \
+    /home/auditclaw/.auditclaw/cron \
+    /home/auditclaw/.auditclaw/data \
+    /home/auditclaw/.auditclaw/devices \
+    /home/auditclaw/.auditclaw/agents \
+    /home/auditclaw/.auditclaw/sessions \
+    /home/auditclaw/.openclaw \
     /workspace/input \
     /workspace/output \
     /workspace/skills \
@@ -73,9 +81,10 @@ ENV NODE_ENV=production
 ENV HOME=/home/auditclaw
 ENV OPENCLAW_STATE_DIR=/home/auditclaw/.auditclaw
 
-# Health check - verify gateway is responding
+# Health check - verify gateway process is running and port 18789 (0x4965) is listening
+# Note: OpenClaw gateway uses WebSocket, so HTTP check may not work
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:18789/ || exit 1
+    CMD pgrep -f "node dist/index.js" > /dev/null && grep -q ":4965 " /proc/net/tcp || exit 1
 
 # Run as non-root user
 USER auditclaw

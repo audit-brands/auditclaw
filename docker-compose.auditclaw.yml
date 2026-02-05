@@ -18,11 +18,11 @@ services:
 
     # Security hardening
     security_opt:
-      - no-new-privileges:true    # Prevent privilege escalation
+      - no-new-privileges:true # Prevent privilege escalation
     cap_drop:
-      - ALL                        # Drop all Linux capabilities
-    read_only: true                # Read-only root filesystem
-    user: "1000:1000"              # Run as non-root user
+      - ALL # Drop all Linux capabilities
+    read_only: true # Read-only root filesystem
+    user: "1000:1000" # Run as non-root user
 
     # Network: localhost only for security
     # Gateway is only accessible from the host machine
@@ -36,7 +36,8 @@ services:
     # Volume mounts with principle of least privilege
     volumes:
       # Config: AuditClaw configuration (disables device auth for containerized use)
-      - ./config/auditclaw.json:/home/auditclaw/.auditclaw/openclaw.json:ro
+      # Note: Create config/auditclaw.json or mount will fail
+      # - ./config/auditclaw.json:/home/auditclaw/.auditclaw/openclaw.json:ro
 
       # Input: Documents to analyze (read-only)
       - ${AUDIT_INPUT:-~/audit-input}:/workspace/input:ro
@@ -49,6 +50,21 @@ services:
 
       # Config data: Persistent state like sessions, paired devices (named volume)
       - auditclaw-data:/home/auditclaw/.auditclaw/data:rw
+
+      # Cron: Required for cron scheduler (named volume, read-write)
+      - auditclaw-cron:/home/auditclaw/.auditclaw/cron:rw
+
+      # Devices: Device pairing info (named volume, read-write)
+      - auditclaw-devices:/home/auditclaw/.auditclaw/devices:rw
+
+      # Agents: Agent state (named volume, read-write)
+      - auditclaw-agents:/home/auditclaw/.auditclaw/agents:rw
+
+      # Sessions: Session state (named volume, read-write)
+      - auditclaw-sessions:/home/auditclaw/.auditclaw/sessions:rw
+
+      # OpenClaw state: Canvas/A2UI needs this (named volume, read-write)
+      - auditclaw-openclaw:/home/auditclaw/.openclaw:rw
 
       # Temp: Required for read_only mode (named volume, read-write)
       - auditclaw-tmp:/tmp:rw
@@ -75,12 +91,14 @@ services:
       - OPENCLAW_STATE_DIR=/home/auditclaw/.auditclaw
 
     # Process management
-    init: true                     # Use tini for proper signal handling
-    restart: unless-stopped        # Auto-restart on failure
+    init: true # Use tini for proper signal handling
+    restart: unless-stopped # Auto-restart on failure
 
-    # Health check
+    # Health check - verify gateway process is running and port 18789 (0x4965) is listening
+    # Note: OpenClaw gateway uses WebSocket, HTTP check may not work
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:18789/"]
+      test:
+        ["CMD-SHELL", "pgrep -f 'node dist/index.js' > /dev/null && grep -q ':4965 ' /proc/net/tcp"]
       interval: 30s
       timeout: 10s
       start_period: 30s
@@ -90,6 +108,16 @@ services:
 volumes:
   auditclaw-data:
     name: auditclaw-data
+  auditclaw-cron:
+    name: auditclaw-cron
+  auditclaw-devices:
+    name: auditclaw-devices
+  auditclaw-agents:
+    name: auditclaw-agents
+  auditclaw-sessions:
+    name: auditclaw-sessions
+  auditclaw-openclaw:
+    name: auditclaw-openclaw
   auditclaw-tmp:
     name: auditclaw-tmp
 

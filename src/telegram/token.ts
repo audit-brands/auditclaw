@@ -7,3 +7,7 @@ export function getTelegramToken(): string | null {
 export function validateTelegramToken(_token: string): boolean {
   return false;
 }
+
+export function resolveTelegramToken(_params: unknown): string | null {
+  return null;
+}
