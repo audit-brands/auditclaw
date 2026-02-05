@@ -24,9 +24,13 @@ This document details the plan for removing unnecessary components from OpenClaw
   - Gateway starts cleanly without messaging channel errors
   - Container healthcheck passes
 
+- ✅ Step 4: Voice/TTS Components - COMPLETE
+  - Stubbed src/tts/tts.ts with disabled implementations
+  - Kept src/media/ for document processing (PDFs, images)
+  - All TTS functions return "off" or disabled state
+
 ### Next Steps
 
-- Step 4: Remove Voice/TTS Components
 - Step 5: Remove Multi-Agent Routing
 - Step 6: Clean Up Dependencies
 - Step 7: Remove Documentation
