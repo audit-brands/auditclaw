@@ -19,12 +19,14 @@ We're not building a platform. We're building a personal tool that happens to sh
 ## Problem Statement
 
 Internal auditors need AI assistance for:
+
 - Analyzing uploaded documents (policies, process narratives, control matrices)
 - Conducting risk assessments
 - Drafting findings and reports
 - Applying consistent methodologies across engagements
 
 Current options are either:
+
 1. **General-purpose AI tools** — Lack audit-specific knowledge and workflows
 2. **Full OpenClaw** — Overly complex, designed for consumer automation (messaging, smart home, etc.), security concerns for enterprise data
 3. **Enterprise audit software** — Expensive, rigid, slow to adopt AI capabilities
@@ -38,12 +40,14 @@ AuditClaw fills the gap: a focused, local-first AI assistant with audit-specific
 > A personal AI research assistant for auditors, enhanced by skills shared within a trusted professional community.
 
 **What we are:**
+
 - A local tool that runs on your machine
 - Configured for document analysis and audit workflows
 - Enhanced by community-contributed skills
 - Simple enough that any auditor can use it
 
 **What we are not:**
+
 - A platform or marketplace
 - A SaaS product
 - A replacement for professional judgment
@@ -60,6 +64,7 @@ All data stays on your machine unless you explicitly choose otherwise. The AI as
 ### 2. Audit-Focused
 
 Strip away everything auditors don't need:
+
 - ❌ Messaging platform integrations (WhatsApp, Telegram, Discord)
 - ❌ Smart home controls
 - ❌ Voice assistants and wake words
@@ -76,6 +81,7 @@ The skill-sharing model assumes you know and trust the people you're sharing wit
 ### 4. Professional Standards Alignment
 
 Skills should align with recognized frameworks:
+
 - IIA International Standards for the Professional Practice of Internal Auditing
 - COSO Internal Control and ERM Frameworks
 - COBIT for IT governance
@@ -106,6 +112,7 @@ The messaging integrations (WhatsApp, Telegram, etc.) that OpenClaw is known for
 **AuditClaw runs inside a container** to isolate it from the host system. This is a security requirement, not an option.
 
 Why containerization matters:
+
 - **Limits blast radius** — If the AI executes something unexpected, damage is contained
 - **Protects host files** — Container only sees explicitly mounted directories
 - **Enables reproducibility** — Same environment everywhere
@@ -173,9 +180,9 @@ services:
     cap_drop:
       - ALL
     read_only: true
-    user: "1000:1000"  # Non-root
+    user: "1000:1000" # Non-root
     ports:
-      - "127.0.0.1:18789:18789"  # Localhost only
+      - "127.0.0.1:18789:18789" # Localhost only
     volumes:
       # Input: Read-only access to documents you want to analyze
       - ~/audit-input:/workspace/input:ro
@@ -193,31 +200,31 @@ services:
 networks:
   auditclaw-isolated:
     driver: bridge
-    internal: false  # Needs outbound for API calls
+    internal: false # Needs outbound for API calls
 ```
 
 ### What the Container CAN Access
 
-| Resource | Access | Purpose |
-|----------|--------|---------|
-| `~/audit-input/` | Read-only | Documents you want to analyze |
-| `~/audit-output/` | Read-write | Generated reports, findings, workpapers |
-| `~/.auditclaw/` | Read-write | Configuration, session history |
-| `~/auditclaw-skills/` | Read-only | Community skills |
-| Model API (outbound) | Network | Anthropic/OpenAI API calls |
-| Port 18789 | Localhost only | Web UI access |
+| Resource              | Access         | Purpose                                 |
+| --------------------- | -------------- | --------------------------------------- |
+| `~/audit-input/`      | Read-only      | Documents you want to analyze           |
+| `~/audit-output/`     | Read-write     | Generated reports, findings, workpapers |
+| `~/.auditclaw/`       | Read-write     | Configuration, session history          |
+| `~/auditclaw-skills/` | Read-only      | Community skills                        |
+| Model API (outbound)  | Network        | Anthropic/OpenAI API calls              |
+| Port 18789            | Localhost only | Web UI access                           |
 
 ### What the Container CANNOT Access
 
-| Resource | Why Protected |
-|----------|---------------|
-| `~/.ssh/` | SSH keys, server access |
-| `~/.aws/` | Cloud credentials |
+| Resource                 | Why Protected                      |
+| ------------------------ | ---------------------------------- |
+| `~/.ssh/`                | SSH keys, server access            |
+| `~/.aws/`                | Cloud credentials                  |
 | `~/Documents/` (general) | Personal files outside audit scope |
-| `~/.gnupg/` | Encryption keys |
-| Docker socket | Prevents container escape |
-| Host network | Isolated network namespace |
-| Other containers | Network isolation |
+| `~/.gnupg/`              | Encryption keys                    |
+| Docker socket            | Prevents container escape          |
+| Host network             | Isolated network namespace         |
+| Other containers         | Network isolation                  |
 
 ---
 
@@ -226,6 +233,7 @@ networks:
 ### 1. AuditClaw Core (Fork of OpenClaw)
 
 **What to keep:**
+
 - Gateway (minimal, local-only)
 - Agent core (Pi)
 - Skills engine
@@ -234,15 +242,20 @@ networks:
 - Web interface (Control UI)
 
 **What to remove:**
+
 - All messaging channel integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, etc.)
 - Voice wake / talk mode
 - Mobile companion apps
-- Multi-agent routing (keep single-agent only)
 - Canvas / A2UI (unless useful for audit visualization)
 - Cron jobs and webhooks (unless needed for monitoring)
 - Browser automation (evaluate—may be useful for evidence collection)
 
+**What to retain for future use:**
+
+- Multi-agent routing — Enables Audit Personas feature (see Phase 2+)
+
 **What to modify:**
+
 - Default configuration optimized for audit workflows
 - Simplified onboarding focused on document analysis
 - Audit-specific system prompt and personality
@@ -253,6 +266,7 @@ networks:
 Skills follow the AgentSkills specification with audit-specific extensions.
 
 **Skill structure:**
+
 ```
 skill-name/
 ├── SKILL.md           # Required: metadata + instructions
@@ -264,6 +278,7 @@ skill-name/
 ```
 
 **Skill categories (123 identified):**
+
 - Core Audit Process (16 skills)
 - Risk Assessment (9 skills)
 - SOX/Financial Audit (11 skills)
@@ -294,6 +309,7 @@ cd ~/.auditclaw/community-skills && git pull
 ```
 
 **Alternative methods:**
+
 - Direct file copy for air-gapped environments
 - Zip download from GitHub releases
 - Private forks for organization-specific modifications
@@ -301,21 +317,24 @@ cd ~/.auditclaw/community-skills && git pull
 ### 4. Trust Model
 
 **Scoped trust** is the recommended default:
+
 - Skills declare what capabilities they need in their manifest
 - User approves capabilities on first use
 - No runtime capability escalation
 
 **Capability declarations:**
+
 ```yaml
 # In SKILL.md frontmatter
 requires:
-  - file-read          # Can read files user provides
-  - file-write         # Can create output files
-  - web-search         # Can search the web (if enabled)
-  - shell-execute      # Can run scripts (requires explicit approval)
+  - file-read # Can read files user provides
+  - file-write # Can create output files
+  - web-search # Can search the web (if enabled)
+  - shell-execute # Can run scripts (requires explicit approval)
 ```
 
 **Trust decisions:**
+
 - Skills from `auditclaw/skills` official repo: Pre-approved (community vetted)
 - Skills from known colleagues: Approve on install
 - Skills from unknown sources: Review before enabling
@@ -384,18 +403,21 @@ docker compose exec auditclaw /bin/bash
 ### Typical Workflows
 
 **Risk Assessment:**
+
 1. Upload process documentation
 2. "Please conduct a risk assessment of this accounts payable process"
 3. AuditClaw activates `risk-assessment` skill
 4. Returns structured risk register with likelihood, impact, recommendations
 
 **Finding Documentation:**
+
 1. Describe the issue found during testing
 2. "Help me write up this finding: we found 3 out of 25 invoices were approved by unauthorized personnel"
 3. AuditClaw activates `finding-writer` skill
 4. Returns structured finding with condition, criteria, cause, effect, recommendation
 
 **Control Testing:**
+
 1. Upload control documentation
 2. "Design test procedures for this monthly reconciliation control"
 3. AuditClaw activates `sox-control-testing` skill
@@ -410,7 +432,7 @@ docker compose exec auditclaw /bin/bash
 Location: `docker-compose.yml` in the AuditClaw repo
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   auditclaw:
@@ -418,7 +440,7 @@ services:
     image: auditclaw:latest
     container_name: auditclaw
     restart: unless-stopped
-    
+
     # Security hardening
     security_opt:
       - no-new-privileges:true
@@ -426,27 +448,27 @@ services:
       - ALL
     read_only: true
     user: "1000:1000"
-    
+
     # Network: localhost only, isolated
     ports:
       - "127.0.0.1:18789:18789"
     networks:
       - auditclaw-net
-    
+
     # Volumes: explicit, minimal access
     volumes:
       - ${AUDIT_INPUT:-~/audit-input}:/workspace/input:ro
       - ${AUDIT_OUTPUT:-~/audit-output}:/workspace/output:rw
       - ${SKILLS_DIR:-~/auditclaw-skills}:/workspace/skills:ro
       - auditclaw-config:/home/auditclaw/.auditclaw:rw
-      - auditclaw-tmp:/tmp:rw  # Required for read_only
-    
+      - auditclaw-tmp:/tmp:rw # Required for read_only
+
     # Environment
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - AUDITCLAW_MODEL=${AUDITCLAW_MODEL:-claude-sonnet-4-20250514}
-    
+
     # Health check
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
@@ -495,9 +517,7 @@ File: `config.json`
     "systemPrompt": "You are AuditClaw, an AI assistant for internal auditors. You help with risk assessments, control testing, finding documentation, and audit report writing. You follow IIA Standards and align with COSO frameworks. Be precise, professional, and cite relevant standards when appropriate."
   },
   "skills": {
-    "directories": [
-      "/workspace/skills"
-    ],
+    "directories": ["/workspace/skills"],
     "trustLevel": "scoped"
   },
   "workspace": {
@@ -566,6 +586,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - [x] Document container setup and usage (`docs/auditclaw/container-setup.md`)
 
 **Deliverables:**
+
 - `Dockerfile.auditclaw` and `docker-compose.auditclaw.yml`
 - Working container running OpenClaw
 - Basic setup documentation (`docs/auditclaw/container-setup.md`)
@@ -574,17 +595,19 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 
 **Goal:** Strip out components not needed for audit workflows. Remove incrementally and verify web UI still works after each removal.
 
-- [ ] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, etc.)
-- [ ] Remove voice/wake word components
-- [ ] Remove mobile companion app code
-- [ ] Remove multi-agent routing (single agent only)
+- [x] Remove messaging integrations (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, etc.)
+- [x] Remove voice/wake word components (stubbed TTS)
+- [x] Remove mobile companion app code
+- [x] **Retain** multi-agent routing (for Audit Personas feature in Phase 2+)
 - [ ] Remove or disable Canvas/A2UI (evaluate usefulness first)
 - [ ] Clean up orphaned dependencies and configuration
 
 **Deliverables:**
+
 - Stripped-down codebase with only web UI interaction
-- Reduced dependency footprint
+- Reduced dependency footprint (messaging libraries removed)
 - Verified working web interface
+- Multi-agent routing retained for future Audit Personas
 
 #### Phase 1.c: Rebranding and Configuration
 
@@ -599,6 +622,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - [ ] Release v0.1.0
 
 **Deliverables:**
+
 - `auditclaw` CLI and renamed paths
 - Working container image (`auditclaw:0.1.0`)
 - Web interface accessible at `localhost:18789`
@@ -606,9 +630,11 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - Documentation for setup and usage
 - Example `.env` file
 
-### Phase 2: Core Skills
+### Phase 2: Core Skills & Audit Personas
 
-**Goal:** Essential skills for daily audit work
+**Goal:** Essential skills for daily audit work + multi-persona architecture
+
+#### Core Skills
 
 - [ ] `risk-assessment` (✅ complete)
 - [ ] `finding-writer`
@@ -619,10 +645,37 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - [ ] `executive-summary-writer`
 - [ ] `sox-control-testing`
 
+#### Audit Personas Architecture
+
+Enable different AI personas for segregation of duties in audit workflows:
+
+**Planned Personas:**
+
+- **Primary Auditor** — Performs initial audit work (risk assessment, testing, documentation)
+- **QA & Standards Reviewer** — Evaluates primary auditor's work for quality and standards compliance
+- **Domain Specialists** — Financial, IT, Compliance, Fraud specialists with domain-specific skills
+- **Engagement Manager** — Oversees workflow, coordinates between personas
+
+**Benefits:**
+
+- **Segregation of Duties** — Different personas perform different audit phases
+- **Quality Control** — QA persona reviews work before finalization
+- **Skill Affinity** — Personas can have preferred skills (e.g., IT Auditor prefers COBIT skills)
+- **Audit Trail** — Track which persona performed which work
+
+**Technical Foundation:**
+
+- Leverage existing `src/routing/` for persona routing
+- Agent configurations define persona system prompts and skill preferences
+- Session management tracks persona-to-work mapping
+
 **Deliverables:**
+
 - 8 production-quality skills
 - Skill development guide
 - Example skill template
+- Audit Personas configuration guide
+- Multi-persona workflow documentation
 
 ### Phase 3: Community Infrastructure
 
@@ -635,6 +688,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - [ ] Issue/PR templates
 
 **Deliverables:**
+
 - GitHub organization setup
 - Contributing guide
 - CI/CD for skill validation
@@ -652,6 +706,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 - [ ] Video tutorials / onboarding
 
 **Deliverables:**
+
 - v1.0.0 release
 - 20+ skills
 - Full documentation site
@@ -666,11 +721,13 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 **Decision:** Forked from OpenClaw main branch on 2026-02-03.
 
 **Details:**
+
 - Fork created from `openclaw/openclaw` main branch
 - Base commit: `f52ca0a71` (2026-02-03)
 - OpenClaw version at fork: v2026.2.2
 
 **Rationale:**
+
 - Main branch provided the most current feature set
 - Stable enough for our starting point
 - Can selectively pull improvements from upstream as needed
@@ -680,11 +737,13 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 **Decision:** Support multiple providers, recommend Claude.
 
 **Options:**
+
 - Anthropic Claude (recommended for reasoning quality)
 - OpenAI GPT-4
 - Local models via Ollama (privacy-focused)
 
 **Rationale:**
+
 - Different users have different constraints (cost, privacy, enterprise agreements)
 - Claude performs best on complex reasoning tasks
 - Local models enable air-gapped deployments
@@ -694,6 +753,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 **Decision:** Scoped trust with capability declarations.
 
 **Rationale:**
+
 - Full trust is too permissive for professional use
 - Sandboxed execution adds complexity we don't need
 - Scoped trust catches mistakes without impeding workflow
@@ -704,6 +764,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 **Decision:** Follow AgentSkills specification with audit extensions.
 
 **Rationale:**
+
 - Industry standard, supported by multiple tools
 - Ensures portability if users want skills elsewhere
 - Well-documented specification
@@ -714,6 +775,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 **Decision:** npm package + GitHub for skills.
 
 **Rationale:**
+
 - npm is familiar to developers, simple to install
 - GitHub provides version control, issues, PRs for skills
 - No infrastructure to maintain
@@ -728,6 +790,7 @@ Phase 1 is divided into three sub-phases to enable incremental progress and test
 AuditClaw runs inside a hardened Docker container. This is the primary security boundary.
 
 **Container hardening measures:**
+
 - `no-new-privileges` — Prevents privilege escalation
 - `cap_drop: ALL` — Removes all Linux capabilities
 - `read_only: true` — Filesystem is read-only (except explicit mounts)
@@ -736,6 +799,7 @@ AuditClaw runs inside a hardened Docker container. This is the primary security 
 - Isolated network — Cannot reach other containers or host services
 
 **What this protects against:**
+
 - Prompt injection leading to system commands
 - Skills attempting to access unauthorized files
 - Accidental data leakage to unintended locations
@@ -786,12 +850,12 @@ AuditClaw runs inside a hardened Docker container. This is the primary security 
 
 ### Credential Protection
 
-| Credential | Location | Protection |
-|------------|----------|------------|
-| API keys | Host `.env` file | Never copied into container filesystem; passed as env var |
-| Session data | Container volume | Isolated from host; delete volume to clear |
-| Audit documents | `~/audit-input/` | Read-only mount; container cannot modify |
-| Output files | `~/audit-output/` | Only writable location; easy to audit |
+| Credential      | Location          | Protection                                                |
+| --------------- | ----------------- | --------------------------------------------------------- |
+| API keys        | Host `.env` file  | Never copied into container filesystem; passed as env var |
+| Session data    | Container volume  | Isolated from host; delete volume to clear                |
+| Audit documents | `~/audit-input/`  | Read-only mount; container cannot modify                  |
+| Output files    | `~/audit-output/` | Only writable location; easy to audit                     |
 
 ### Enterprise Deployment Considerations
 
@@ -844,17 +908,19 @@ The following features are user-configurable based on individual needs and risk 
 ### Memory / Persistence (Default: ON)
 
 **AuditClaw persists memory across sessions as a core feature.** This enables:
+
 - Continuity across audit engagements
 - Learning your organization's terminology and preferences
 - Building knowledge about recurring processes and controls
 - Referencing prior risk assessments and findings
 
 **Configuration:**
+
 ```json
 {
   "memory": {
     "enabled": true,
-    "retention": "unlimited",  // or "30d", "90d", "engagement"
+    "retention": "unlimited", // or "30d", "90d", "engagement"
     "location": "/workspace/memory"
   }
 }
@@ -869,10 +935,11 @@ Browser automation allows the agent to control a headless browser for evidence c
 **Trade-offs documented in** `docs/CONFIGURATION_GUIDE.md#browser-automation`
 
 **Configuration:**
+
 ```json
 {
   "features": {
-    "browser": false  // Set to true to enable
+    "browser": false // Set to true to enable
   }
 }
 ```
@@ -882,6 +949,7 @@ Browser automation allows the agent to control a headless browser for evidence c
 Multi-user mode enables team collaboration features including shared workspaces, finding collaboration, and team-based access controls.
 
 **Status:** Planned for future release. Requires additional security considerations:
+
 - User authentication and authorization
 - Session isolation between users
 - Audit trail of who did what
@@ -891,11 +959,12 @@ Multi-user mode enables team collaboration features including shared workspaces,
 **Trade-offs documented in** `docs/CONFIGURATION_GUIDE.md#multi-user-mode`
 
 **Configuration (future):**
+
 ```json
 {
   "multiUser": {
-    "enabled": false,  // Future feature
-    "authProvider": "local",  // or "oidc", "saml"
+    "enabled": false, // Future feature
+    "authProvider": "local", // or "oidc", "saml"
     "sessionIsolation": true
   }
 }
@@ -908,10 +977,11 @@ Allows skills to execute shell commands for advanced automation (data extraction
 **Trade-offs documented in** `docs/CONFIGURATION_GUIDE.md#shell-execution`
 
 **Configuration:**
+
 ```json
 {
   "features": {
-    "shellExecution": false  // Set to true to enable (requires review)
+    "shellExecution": false // Set to true to enable (requires review)
   }
 }
 ```
@@ -923,10 +993,11 @@ Enables scheduled task execution for automated monitoring, recurring reports, or
 **Trade-offs documented in** `docs/CONFIGURATION_GUIDE.md#scheduled-tasks`
 
 **Configuration:**
+
 ```json
 {
   "features": {
-    "cron": false  // Set to true to enable
+    "cron": false // Set to true to enable
   }
 }
 ```
@@ -957,26 +1028,32 @@ This approach lets users make informed decisions based on their specific context
 
 ### Appendix A: Removed OpenClaw Components
 
-| Component | Reason for Removal |
-|-----------|-------------------|
-| WhatsApp integration | Not needed for audit workflows |
-| Telegram integration | Not needed for audit workflows |
-| Slack integration | Not needed for audit workflows |
-| Discord integration | Not needed for audit workflows |
-| Signal integration | Not needed for audit workflows |
-| iMessage integration | Not needed for audit workflows |
-| Google Chat integration | Not needed for audit workflows |
-| Microsoft Teams integration | Not needed for audit workflows |
-| Matrix integration | Not needed for audit workflows |
-| Voice wake | Not needed; privacy concerns |
-| Talk mode | Not needed for audit workflows |
-| iOS app | Out of scope |
-| Android app | Out of scope |
-| macOS menu bar app | Evaluate; may keep |
-| Multi-agent routing | Unnecessary complexity |
-| Canvas / A2UI | Evaluate; may keep for visualization |
-| Cron jobs | Keep minimal for reminders |
-| Webhooks | Remove unless specific use case |
+| Component                   | Reason for Removal                   |
+| --------------------------- | ------------------------------------ |
+| WhatsApp integration        | Not needed for audit workflows       |
+| Telegram integration        | Not needed for audit workflows       |
+| Slack integration           | Not needed for audit workflows       |
+| Discord integration         | Not needed for audit workflows       |
+| Signal integration          | Not needed for audit workflows       |
+| iMessage integration        | Not needed for audit workflows       |
+| Google Chat integration     | Not needed for audit workflows       |
+| Microsoft Teams integration | Not needed for audit workflows       |
+| Matrix integration          | Not needed for audit workflows       |
+| Voice wake                  | Not needed; privacy concerns         |
+| Talk mode                   | Not needed for audit workflows       |
+| iOS app                     | Out of scope                         |
+| Android app                 | Out of scope                         |
+| macOS menu bar app          | Evaluate; may keep                   |
+| Canvas / A2UI               | Evaluate; may keep for visualization |
+
+### Appendix A.1: Retained Components (Repurposed)
+
+| Component                               | New Purpose                                              |
+| --------------------------------------- | -------------------------------------------------------- |
+| Multi-agent routing (`src/routing/`)    | Audit Personas — enables segregation of duties workflows |
+| Pairing infrastructure (`src/pairing/`) | Supports persona configuration and routing               |
+| Cron jobs                               | Keep minimal for reminders                               |
+| Webhooks                                | Remove unless specific use case                          |
 
 ### Appendix B: Skills Priority List
 
@@ -984,12 +1061,12 @@ See `auditclaw-skills-brainstorm.md` for complete list of 123 identified skills 
 
 ### Appendix C: Related Documents
 
-| Document | Description |
-|----------|-------------|
-| `docs/CONFIGURATION_GUIDE.md` | Detailed guide to configurable features with trade-offs |
-| `auditclaw-skill-spec.md` | Skill format specification |
-| `auditclaw-skills-brainstorm.md` | Complete skills catalog (123 skills) |
-| `risk-assessment/` | First complete skill implementation |
+| Document                         | Description                                             |
+| -------------------------------- | ------------------------------------------------------- |
+| `docs/CONFIGURATION_GUIDE.md`    | Detailed guide to configurable features with trade-offs |
+| `auditclaw-skill-spec.md`        | Skill format specification                              |
+| `auditclaw-skills-brainstorm.md` | Complete skills catalog (123 skills)                    |
+| `risk-assessment/`               | First complete skill implementation                     |
 
 ---
 
@@ -1009,4 +1086,4 @@ This document is licensed under Apache 2.0, consistent with the AuditClaw projec
 
 ---
 
-*Document maintained by the AuditClaw community.*
+_Document maintained by the AuditClaw community._

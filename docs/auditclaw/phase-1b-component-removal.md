@@ -28,10 +28,18 @@ This document details the plan for removing unnecessary components from OpenClaw
   - Stubbed src/tts/tts.ts with disabled implementations
   - Kept src/media/ for document processing (PDFs, images)
   - All TTS functions return "off" or disabled state
+- ⏭️ Step 5: Multi-Agent Routing - SKIPPED (Retained for Future Use)
+  - **Decision**: Keep src/routing/ and src/pairing/ for audit persona support
+  - **Rationale**: Multi-agent routing enables segregation of duties in audit workflows
+  - **Future use cases**:
+    - Primary Auditor persona - performs initial audit work
+    - QA & Standards persona - reviews and evaluates primary auditor's work
+    - Domain specialists (Financial, IT, Compliance, etc.)
+    - Skills can be associated with specific personas
+  - See: Phase 2+ roadmap for Audit Personas feature
 
 ### Next Steps
 
-- Step 5: Remove Multi-Agent Routing
 - Step 6: Clean Up Dependencies
 - Step 7: Remove Documentation
 
