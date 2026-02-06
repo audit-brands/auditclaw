@@ -58,10 +58,17 @@ This document details the plan for rebranding OpenClaw to AuditClaw and creating
   - Created troubleshooting.md common issues
   - Created index.md documentation overview
 
-### In Progress
+- ✅ Step 7: Release v0.1.0 (complete)
+  - Pre-release checklist verified (Docker build, HTTP endpoint)
+  - Version set to 0.1.0-dev (ready for release tag)
+  - CHANGELOG.md updated with 0.1.0 release notes
+  - Fixed type alias for backwards compatibility
+  - Fixed gateway auth for AUDITCLAW\_ env vars
 
-- Step 1.3: Environment variable bulk replacement (230+ files - functional with fallbacks)
-- Step 7: Release v0.1.0
+### Deferred
+
+- Step 1.3: Environment variable bulk replacement (230+ files)
+  - Functional with fallbacks - full replacement deferred to Phase 2
 
 ---
 

@@ -1,6 +1,51 @@
 # Changelog
 
-Docs: https://docs.openclaw.ai
+AuditClaw - AI-powered internal audit assistant
+
+## 0.1.0 (2026-02-05)
+
+First release of AuditClaw.
+
+### Added
+
+- **Core Platform**
+  - Containerized deployment with Docker security hardening
+  - Web-based dashboard for chat and session management
+  - Gateway server with WebSocket support
+
+- **Audit Features**
+  - Audit-focused system prompt with IIA Standards, COSO Framework
+  - Professional skepticism and objectivity guidance
+  - Workpaper documentation structure
+  - Compliance research support (SOX, COBIT, regulations)
+
+- **Document Support**
+  - PDF, Excel, Word document analysis
+  - Isolated input/output workspace directories
+
+- **Configuration**
+  - JSON configuration at `~/.auditclaw/auditclaw.json`
+  - Environment variables with `AUDITCLAW_` prefix
+  - Legacy fallback for `OPENCLAW_` variables
+
+- **Documentation**
+  - Getting started, configuration, system prompt, troubleshooting guides
+
+### Security
+
+- Read-only root filesystem in container
+- Non-root user execution
+- Capability dropping (CAP_DROP ALL)
+- No privilege escalation (no-new-privileges)
+- Localhost-only binding by default
+
+### Removed (from OpenClaw base)
+
+- Messaging channels (WhatsApp, Telegram, Discord, Signal, iMessage)
+
+---
+
+## OpenClaw History (upstream)
 
 ## 2026.2.2
 
