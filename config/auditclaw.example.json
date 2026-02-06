@@ -1,0 +1,124 @@
+{
+  // AuditClaw Configuration
+  // Copy to ~/.auditclaw/auditclaw.json and customize for your environment
+  //
+  // This configuration provides audit-focused defaults with both:
+  // - Chat mode: Interactive Q&A for audit research and guidance
+  // - Workpaper mode: Structured documentation generation
+
+  // UI Configuration
+  "ui": {
+    "assistant": {
+      "name": "AuditClaw",
+      "avatar": "\ud83d\udccb"
+    }
+  },
+
+  // Agent Defaults - Audit-focused settings
+  "agents": {
+    "defaults": {
+      // Primary model for audit work (Claude recommended for document analysis)
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-5",
+        "fallbacks": ["openrouter/anthropic/claude-sonnet-4-5", "openai/gpt-4o"]
+      },
+
+      // Image model for analyzing scanned documents and evidence
+      "imageModel": {
+        "primary": "anthropic/claude-sonnet-4-5"
+      },
+
+      // Working directory for audit files
+      "workspace": "/workspace",
+
+      // Thinking level - higher for complex audit analysis
+      "thinkingDefault": "medium",
+
+      // Timeout for long document analysis tasks (5 minutes)
+      "timeoutSeconds": 300,
+
+      // Context management for long audit sessions
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "2h"
+      },
+
+      // Heartbeat for scheduled audit reminders
+      "heartbeat": {
+        "every": "4h",
+        "prompt": "Check for pending audit tasks, deadlines, or follow-up items. Review HEARTBEAT.md if present."
+      }
+    },
+
+    // Audit-specific agent configurations
+    "list": [
+      {
+        "id": "auditor",
+        "name": "Audit Assistant",
+        "default": true,
+        "workspace": "/workspace"
+      },
+      {
+        "id": "workpaper",
+        "name": "Workpaper Generator",
+        "workspace": "/workspace/output",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-5"
+        }
+      }
+    ]
+  },
+
+  // Tools Configuration - Audit-relevant tools
+  "tools": {
+    // File tools are essential for document analysis
+    "read": { "enabled": true },
+    "write": { "enabled": true },
+    "edit": { "enabled": true },
+    "grep": { "enabled": true },
+    "find": { "enabled": true },
+    "ls": { "enabled": true },
+
+    // Web tools for compliance research
+    "web_search": { "enabled": true },
+    "web_fetch": { "enabled": true },
+
+    // Exec for data analysis scripts (Python, etc.)
+    "exec": { "enabled": true },
+
+    // Session tools for multi-step audit workflows
+    "sessions_spawn": { "enabled": true },
+    "sessions_send": { "enabled": true }
+  },
+
+  // Skills Configuration - Audit-specific skills
+  "skills": {
+    // Enable skills for audit workflows
+    "enabled": true,
+    // Directory for custom audit skills
+    "dirs": ["/workspace/skills"]
+  },
+
+  // Gateway Configuration
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      // Token-based auth for containerized deployment
+      "mode": "token"
+    },
+    "controlUi": {
+      "enabled": true
+    }
+  },
+
+  // Logging - Detailed for audit trail
+  "logging": {
+    "level": "info",
+    "redactSensitive": "tools"
+  },
+
+  // Cron - For scheduled audit tasks
+  "cron": {
+    "enabled": true
+  }
+}

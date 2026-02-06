@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { OpenClawConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
+import type { AuditClawConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
 import {
   loadShellEnvFallback,
   resolveShellEnvFallbackTimeoutMs,
@@ -30,7 +30,7 @@ import { normalizeConfigPaths } from "./normalize-paths.js";
 import { resolveConfigPath, resolveDefaultConfigCandidates, resolveStateDir } from "./paths.js";
 import { applyConfigOverrides } from "./runtime-overrides.js";
 import { validateConfigObjectWithPlugins } from "./validation.js";
-import { compareOpenClawVersions } from "./version.js";
+import { compareAuditClawVersions } from "./version.js";
 
 // Re-export for backwards compatibility
 export { CircularIncludeError, ConfigIncludeError } from "./includes.js";
@@ -83,11 +83,11 @@ export function resolveConfigSnapshotHash(snapshot: {
   return hashConfigRaw(snapshot.raw);
 }
 
-function coerceConfig(value: unknown): OpenClawConfig {
+function coerceConfig(value: unknown): AuditClawConfig {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
   }
-  return value as OpenClawConfig;
+  return value as AuditClawConfig;
 }
 
 async function rotateConfigBackups(configPath: string, ioFs: typeof fs.promises): Promise<void> {
@@ -133,7 +133,7 @@ function warnOnConfigMiskeys(raw: unknown, logger: Pick<typeof console, "warn">)
   }
 }
 
-function stampConfigVersion(cfg: OpenClawConfig): OpenClawConfig {
+function stampConfigVersion(cfg: AuditClawConfig): AuditClawConfig {
   const now = new Date().toISOString();
   return {
     ...cfg,
@@ -145,23 +145,23 @@ function stampConfigVersion(cfg: OpenClawConfig): OpenClawConfig {
   };
 }
 
-function warnIfConfigFromFuture(cfg: OpenClawConfig, logger: Pick<typeof console, "warn">): void {
+function warnIfConfigFromFuture(cfg: AuditClawConfig, logger: Pick<typeof console, "warn">): void {
   const touched = cfg.meta?.lastTouchedVersion;
   if (!touched) {
     return;
   }
-  const cmp = compareOpenClawVersions(VERSION, touched);
+  const cmp = compareAuditClawVersions(VERSION, touched);
   if (cmp === null) {
     return;
   }
   if (cmp < 0) {
     logger.warn(
-      `Config was last written by a newer OpenClaw (${touched}); current version is ${VERSION}.`,
+      `Config was last written by a newer AuditClaw (${touched}); current version is ${VERSION}.`,
     );
   }
 }
 
-function applyConfigEnv(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): void {
+function applyConfigEnv(cfg: AuditClawConfig, env: NodeJS.ProcessEnv): void {
   const entries = collectConfigEnvVars(cfg);
   for (const [key, value] of Object.entries(entries)) {
     if (env[key]?.trim()) {
@@ -209,7 +209,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
   const configPath =
     candidatePaths.find((candidate) => deps.fs.existsSync(candidate)) ?? requestedConfigPath;
 
-  function loadConfig(): OpenClawConfig {
+  function loadConfig(): AuditClawConfig {
     try {
       if (!deps.fs.existsSync(configPath)) {
         if (shouldEnableShellEnvFallback(deps.env) && !shouldDeferShellEnvFallback(deps.env)) {
@@ -234,7 +234,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
 
       // Apply config.env to process.env BEFORE substitution so ${VAR} can reference config-defined vars
       if (resolved && typeof resolved === "object" && "env" in resolved) {
-        applyConfigEnv(resolved as OpenClawConfig, deps.env);
+        applyConfigEnv(resolved as AuditClawConfig, deps.env);
       }
 
       // Substitute ${VAR} env var references
@@ -245,7 +245,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       if (typeof resolvedConfig !== "object" || resolvedConfig === null) {
         return {};
       }
-      const preValidationDuplicates = findDuplicateAgentDirs(resolvedConfig as OpenClawConfig, {
+      const preValidationDuplicates = findDuplicateAgentDirs(resolvedConfig as AuditClawConfig, {
         env: deps.env,
         homedir: deps.homedir,
       });
@@ -395,7 +395,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
 
       // Apply config.env to process.env BEFORE substitution so ${VAR} can reference config-defined vars
       if (resolved && typeof resolved === "object" && "env" in resolved) {
-        applyConfigEnv(resolved as OpenClawConfig, deps.env);
+        applyConfigEnv(resolved as AuditClawConfig, deps.env);
       }
 
       // Substitute ${VAR} env var references
@@ -477,7 +477,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     }
   }
 
-  async function writeConfigFile(cfg: OpenClawConfig) {
+  async function writeConfigFile(cfg: AuditClawConfig) {
     clearConfigCache();
     const validated = validateConfigObjectWithPlugins(cfg);
     if (!validated.ok) {
@@ -551,7 +551,7 @@ const DEFAULT_CONFIG_CACHE_MS = 200;
 let configCache: {
   configPath: string;
   expiresAt: number;
-  config: OpenClawConfig;
+  config: AuditClawConfig;
 } | null = null;
 
 function resolveConfigCacheMs(env: NodeJS.ProcessEnv): number {
@@ -580,7 +580,7 @@ function clearConfigCache(): void {
   configCache = null;
 }
 
-export function loadConfig(): OpenClawConfig {
+export function loadConfig(): AuditClawConfig {
   const io = createConfigIO();
   const configPath = io.configPath;
   const now = Date.now();
@@ -608,7 +608,7 @@ export async function readConfigFileSnapshot(): Promise<ConfigFileSnapshot> {
   return await createConfigIO().readConfigFileSnapshot();
 }
 
-export async function writeConfigFile(cfg: OpenClawConfig): Promise<void> {
+export async function writeConfigFile(cfg: AuditClawConfig): Promise<void> {
   clearConfigCache();
   await createConfigIO().writeConfigFile(cfg);
 }

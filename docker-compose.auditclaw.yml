@@ -63,7 +63,7 @@ services:
       # Sessions: Session state (named volume, read-write)
       - auditclaw-sessions:/home/auditclaw/.auditclaw/sessions:rw
 
-      # OpenClaw state: Canvas/A2UI needs this (named volume, read-write)
+      # AuditClaw state: Canvas/A2UI needs this (named volume, read-write)
       - auditclaw-openclaw:/home/auditclaw/.openclaw:rw
 
       # Temp: Required for read_only mode (named volume, read-write)
@@ -79,23 +79,23 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - GROQ_API_KEY=${GROQ_API_KEY:-}
 
-      # Gateway authentication token (required by OpenClaw gateway)
+      # Gateway authentication token (required by AuditClaw gateway)
       # Default 'local' is fine since container only binds to 127.0.0.1
-      # Override with OPENCLAW_GATEWAY_TOKEN in .env for LAN access
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-local}
+      # Override with AUDITCLAW_GATEWAY_TOKEN in .env for LAN access
+      - AUDITCLAW_GATEWAY_TOKEN=${AUDITCLAW_GATEWAY_TOKEN:-local}
 
       # Standard environment
       - HOME=/home/auditclaw
       - TERM=xterm-256color
       - NODE_ENV=production
-      - OPENCLAW_STATE_DIR=/home/auditclaw/.auditclaw
+      - AUDITCLAW_STATE_DIR=/home/auditclaw/.auditclaw
 
     # Process management
     init: true # Use tini for proper signal handling
     restart: unless-stopped # Auto-restart on failure
 
     # Health check - verify gateway process is running and port 18789 (0x4965) is listening
-    # Note: OpenClaw gateway uses WebSocket, HTTP check may not work
+    # Note: AuditClaw gateway uses WebSocket, HTTP check may not work
     healthcheck:
       test:
         ["CMD-SHELL", "pgrep -f 'node dist/index.js' > /dev/null && grep -q ':4965 ' /proc/net/tcp"]
