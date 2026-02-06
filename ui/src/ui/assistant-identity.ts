@@ -1,8 +1,8 @@
 const MAX_ASSISTANT_NAME = 50;
 const MAX_ASSISTANT_AVATAR = 200;
 
-export const DEFAULT_ASSISTANT_NAME = "Assistant";
-export const DEFAULT_ASSISTANT_AVATAR = "A";
+export const DEFAULT_ASSISTANT_NAME = "AuditClaw";
+export const DEFAULT_ASSISTANT_AVATAR = "📋";
 
 export type AssistantIdentity = {
   agentId?: string | null;
@@ -12,6 +12,9 @@ export type AssistantIdentity = {
 
 declare global {
   interface Window {
+    __AUDITCLAW_ASSISTANT_NAME__?: string;
+    __AUDITCLAW_ASSISTANT_AVATAR__?: string;
+    // Legacy support
     __OPENCLAW_ASSISTANT_NAME__?: string;
     __OPENCLAW_ASSISTANT_AVATAR__?: string;
   }
@@ -46,7 +49,7 @@ export function resolveInjectedAssistantIdentity(): AssistantIdentity {
     return normalizeAssistantIdentity({});
   }
   return normalizeAssistantIdentity({
-    name: window.__OPENCLAW_ASSISTANT_NAME__,
-    avatar: window.__OPENCLAW_ASSISTANT_AVATAR__,
+    name: window.__AUDITCLAW_ASSISTANT_NAME__ ?? window.__OPENCLAW_ASSISTANT_NAME__,
+    avatar: window.__AUDITCLAW_ASSISTANT_AVATAR__ ?? window.__OPENCLAW_ASSISTANT_AVATAR__,
   });
 }
