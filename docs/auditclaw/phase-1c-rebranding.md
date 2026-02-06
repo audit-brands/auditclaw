@@ -46,11 +46,21 @@ This document details the plan for rebranding OpenClaw to AuditClaw and creating
   - Workpaper documentation guidance (objectives, procedures, evidence, conclusions)
   - Replaced all OpenClaw references with AuditClaw throughout system prompt
 
+- ✅ Step 5: UI Refinements (complete)
+  - Updated chat placeholder with audit-focused text
+  - Updated navigation subtitles with audit terminology
+  - Updated docs link to local AuditClaw docs
+
+- ✅ Step 6: User Documentation (complete)
+  - Created getting-started.md quick start guide
+  - Created configuration.md config options guide
+  - Created system-prompt.md customization guide
+  - Created troubleshooting.md common issues
+  - Created index.md documentation overview
+
 ### In Progress
 
 - Step 1.3: Environment variable bulk replacement (230+ files - functional with fallbacks)
-- Step 5: UI refinements
-- Step 6: User documentation
 - Step 7: Release v0.1.0
 
 ---
