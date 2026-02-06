@@ -99,6 +99,9 @@ export type AuditClawConfig = {
   memory?: MemoryConfig;
 };
 
+// Type alias for backwards compatibility (internal code still uses OpenClawConfig)
+export type OpenClawConfig = AuditClawConfig;
+
 export type ConfigValidationIssue = {
   path: string;
   message: string;
