@@ -203,7 +203,7 @@ export function subtitleForTab(tab: Tab) {
     case "chat":
       return "Direct gateway chat session for quick interventions.";
     case "config":
-      return "Edit ~/.openclaw/openclaw.json safely.";
+      return "Edit ~/.auditclaw/auditclaw.json safely.";
     case "debug":
       return "Gateway snapshots, events, and manual RPC calls.";
     case "logs":
