@@ -175,10 +175,10 @@ export function renderApp(state: AppViewState) {
           <div class="nav-group__items">
             <a
               class="nav-item nav-item--external"
-              href="https://docs.openclaw.ai"
+              href="/docs/auditclaw/"
               target="_blank"
               rel="noreferrer"
-              title="Docs (opens in new tab)"
+              title="AuditClaw Docs (opens in new tab)"
             >
               <span class="nav-item__icon" aria-hidden="true">${icons.book}</span>
               <span class="nav-item__text">Docs</span>

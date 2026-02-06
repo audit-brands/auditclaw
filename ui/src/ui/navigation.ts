@@ -185,29 +185,29 @@ export function titleForTab(tab: Tab) {
 export function subtitleForTab(tab: Tab) {
   switch (tab) {
     case "agents":
-      return "Manage agent workspaces, tools, and identities.";
+      return "Manage audit agent workspaces and configurations.";
     case "overview":
-      return "Gateway status, entry points, and a fast health read.";
+      return "AuditClaw status, connections, and health.";
     case "channels":
-      return "Manage channels and settings.";
+      return "Manage communication channels and settings.";
     case "instances":
-      return "Presence beacons from connected clients and nodes.";
+      return "Connected clients and audit nodes.";
     case "sessions":
-      return "Inspect active sessions and adjust per-session defaults.";
+      return "Active audit sessions and engagement context.";
     case "cron":
-      return "Schedule wakeups and recurring agent runs.";
+      return "Schedule recurring audit tasks and reminders.";
     case "skills":
-      return "Manage skill availability and API key injection.";
+      return "Audit skills for risk assessment, testing, and workpapers.";
     case "nodes":
-      return "Paired devices, capabilities, and command exposure.";
+      return "Paired devices and audit tool integrations.";
     case "chat":
-      return "Direct gateway chat session for quick interventions.";
+      return "Audit assistant for research, analysis, and documentation.";
     case "config":
       return "Edit ~/.auditclaw/auditclaw.json safely.";
     case "debug":
-      return "Gateway snapshots, events, and manual RPC calls.";
+      return "Gateway diagnostics and manual RPC calls.";
     case "logs":
-      return "Live tail of the gateway file logs.";
+      return "Live tail of audit session logs.";
     default:
       return "";
   }
