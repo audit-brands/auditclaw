@@ -24,17 +24,34 @@ This document details the plan for rebranding OpenClaw to AuditClaw and creating
   - Added legacy fallbacks for migration
   - Cleaned up package.json scripts
 
-- ✅ Step 2: Branding Updates (partial)
+- ✅ Step 2: Branding Updates (complete)
   - Updated HTML title to "AuditClaw"
   - Updated localStorage key prefix
   - Updated default assistant identity (name: "AuditClaw", avatar: "📋")
   - Updated default tagline
+  - Updated UI overview with auditclaw branding
+
+- ✅ Step 3: Audit-Focused Default Configuration (complete)
+  - Created `config/auditclaw.example.json` with audit-focused defaults
+  - Configured both chat and workpaper agent modes
+  - Set appropriate model defaults (Claude Sonnet for analysis)
+  - Configured workspace structure (/workspace/input, /workspace/output)
+  - Set thinking level to medium for audit analysis
+  - Enabled audit-relevant tools (file ops, web search, exec for data analysis)
+
+- ✅ Step 4: Audit-Specific System Prompt (complete)
+  - Updated `src/agents/system-prompt.ts` with audit focus
+  - Added IIA Standards, COSO Framework, and compliance research context
+  - Professional standards section with skepticism and objectivity guidance
+  - Workpaper documentation guidance (objectives, procedures, evidence, conclusions)
+  - Replaced all OpenClaw references with AuditClaw throughout system prompt
 
 ### In Progress
 
-- Step 1.3: Environment variable bulk replacement (230+ files)
-- Step 3: Audit-focused default configuration
-- Step 4: Audit-specific system prompt
+- Step 1.3: Environment variable bulk replacement (230+ files - functional with fallbacks)
+- Step 5: UI refinements
+- Step 6: User documentation
+- Step 7: Release v0.1.0
 
 ---
 
